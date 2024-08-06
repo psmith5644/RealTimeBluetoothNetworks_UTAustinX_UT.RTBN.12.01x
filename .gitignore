@@ -4,3 +4,6 @@
 *.scvd
 *.uvguix.*
 *.uvoptx
+
+# Ceedling
+*/build/*
