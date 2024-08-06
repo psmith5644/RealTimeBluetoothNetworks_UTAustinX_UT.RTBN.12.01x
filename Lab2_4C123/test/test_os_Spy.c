@@ -12,5 +12,3 @@ void test_OS_Spy_GetSemaphoreValueOnInit(void) {
 
     free(semaphorePtr);
 }
-
-void test_FakeSemaphore
