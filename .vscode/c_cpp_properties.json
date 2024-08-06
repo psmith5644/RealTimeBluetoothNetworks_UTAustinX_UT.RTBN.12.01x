@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/Lab2_4C123",
+                "${workspaceFolder}/Lab2_4C123/include/**",
+                "${workspaceFolder}/Lab2_4C123/test/**",
+                "${workspaceFolder}/Lab2_4C123/src/**",
+                "${workspaceFolder}/Lab2_4C123/Ceedling/vendor/unity/src"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}
