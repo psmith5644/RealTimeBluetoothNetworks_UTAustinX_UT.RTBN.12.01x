@@ -4,7 +4,7 @@
 #include "FakeCortexM.h"
 #include "FakeBSP.h"
 
-void test_FakeSemaphoreInit(void) {
+void test_OS_Spy_GetSemaphoreValueOnInit(void) {
     int32_t * semaphorePtr = malloc(sizeof(int32_t));
     OS_InitSemaphore(semaphorePtr, 2);
 
@@ -12,3 +12,5 @@ void test_FakeSemaphoreInit(void) {
 
     free(semaphorePtr);
 }
+
+void test_FakeSemaphore
