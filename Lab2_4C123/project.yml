@@ -12,7 +12,7 @@
   :build_root: build
 #  :release_build: TRUE
   :test_file_prefix: test_
-  :which_ceedling: gem
+  :which_ceedling: Ceedling/
   :ceedling_version: 0.31.1
   :default_tasks:
     - test:all
@@ -35,6 +35,8 @@
     - -:test/support
   :source:
     - src/**
+  :include:
+    - include/**
   :support:
     - test/support
   :libraries: []
@@ -94,7 +96,7 @@
 
 :plugins:
   :load_paths:
-    - "#{Ceedling.load_path}"
+    - Ceedling/plugins
   :enabled:
     - stdout_pretty_tests_report
     - module_generator
