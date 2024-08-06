@@ -113,9 +113,8 @@ void Scheduler(void){ // every time slice
 // Inputs:  pointer to a semaphore
 //          initial value of semaphore
 // Outputs: none
-void OS_InitSemaphore(int32_t *semaPt, int32_t value){
-  //***YOU IMPLEMENT THIS FUNCTION*****
-
+void OS_InitSemaphore(int32_t * semaphorePtr, int32_t value) {
+    *semaphorePtr = value;
 }
 
 // ******** OS_Wait ************
