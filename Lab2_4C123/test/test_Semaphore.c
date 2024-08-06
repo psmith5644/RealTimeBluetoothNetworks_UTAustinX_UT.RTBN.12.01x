@@ -8,5 +8,5 @@ void test_SemaphoreInitValue(void) {
 
     TEST_ASSERT_EQUAL_INT32(1, value);
 
-   free(semaphorePtr);
+    free(semaphorePtr);
 }
