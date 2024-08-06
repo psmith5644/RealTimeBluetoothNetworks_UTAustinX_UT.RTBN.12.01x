@@ -23,6 +23,7 @@
  http://users.ece.utexas.edu/~valvano/
  */
 
+#include <stdint.h>
 
 #define STCTRL          (*((volatile uint32_t *)0xE000E010))
 #define STRELOAD        (*((volatile uint32_t *)0xE000E014))
