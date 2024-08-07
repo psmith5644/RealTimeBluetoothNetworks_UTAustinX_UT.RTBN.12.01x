@@ -14,3 +14,17 @@ void test_SemaphoreInitValue(void) {
 
     free(semaphorePtr);
 }
+
+void test_SemaphoreWaitDecrement(void) {
+    int32_t * semaphorePtr = malloc(sizeof(int32_t));
+    OS_InitSemaphore(semaphorePtr, 1);
+    
+    int32_t initialValue = OS_Spy_GetSemaphoreValue(semaphorePtr);
+    OS_Wait(semaphorePtr);
+
+    TEST_ASSERT_EQUAL_INT32(initialValue+1, OS_Spy_GetSemaphoreValue(semaphorePtr));
+
+    free(semaphorePtr);
+}
+
+// #include "mock_os.h"
