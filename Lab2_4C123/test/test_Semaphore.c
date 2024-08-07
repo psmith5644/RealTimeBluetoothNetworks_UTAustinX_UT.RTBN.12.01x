@@ -22,7 +22,7 @@ void test_SemaphoreWaitDecrement(void) {
     int32_t initialValue = OS_Spy_GetSemaphoreValue(semaphorePtr);
     OS_Wait(semaphorePtr);
 
-    TEST_ASSERT_EQUAL_INT32(initialValue+1, OS_Spy_GetSemaphoreValue(semaphorePtr));
+    TEST_ASSERT_EQUAL_INT32(initialValue-1, OS_Spy_GetSemaphoreValue(semaphorePtr));
 
     free(semaphorePtr);
 }
