@@ -7,7 +7,8 @@
                 "${workspaceFolder}/Lab2_4C123/include/**",
                 "${workspaceFolder}/Lab2_4C123/test/**",
                 "${workspaceFolder}/Lab2_4C123/src/**",
-                "${workspaceFolder}/Lab2_4C123/Ceedling/vendor/unity/src"
+                "${workspaceFolder}/Lab2_4C123/Ceedling/vendor/unity/src",
+                "${workspaceFolder}/Lab2_4C123/build/test/mocks"
             ],
             "defines": [
                 "_DEBUG",
