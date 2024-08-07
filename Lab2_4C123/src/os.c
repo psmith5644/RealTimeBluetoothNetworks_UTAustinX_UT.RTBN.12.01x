@@ -114,7 +114,7 @@ void Scheduler(void){ // every time slice
 //          initial value of semaphore
 // Outputs: none
 void OS_InitSemaphore(int32_t * semaphorePtr, int32_t value) {
-    *semaphorePtr = value;
+  *semaphorePtr = value;
 }
 
 // ******** OS_Wait ************
@@ -124,7 +124,7 @@ void OS_InitSemaphore(int32_t * semaphorePtr, int32_t value) {
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-
+  (*semaPt)--;
 }
 
 // ******** OS_Signal ************
