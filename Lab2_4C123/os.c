@@ -16,6 +16,8 @@ void StartOS(void);
 tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
+int32_t mailboxData;
+int32_t mailCount;
 
 
 // ******** OS_Init ************
@@ -115,7 +117,9 @@ void Scheduler(void){ // every time slice
 // Outputs: none
 void OS_InitSemaphore(int32_t *semaPt, int32_t value){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  DisableInterrupts();
+  *semaPt = value;
+  EnableInterrupts();
 }
 
 // ******** OS_Wait ************
@@ -125,7 +129,12 @@ void OS_InitSemaphore(int32_t *semaPt, int32_t value){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-
+  while (*semaPt == 0) {
+    // spinlock
+  }
+  DisableInterrupts();
+  (*semaPt)--;
+  EnableInterrupts();
 }
 
 // ******** OS_Signal ************
@@ -136,7 +145,9 @@ void OS_Wait(int32_t *semaPt){
 // Outputs: none
 void OS_Signal(int32_t *semaPt){
 //***YOU IMPLEMENT THIS FUNCTION*****
-
+  DisableInterrupts();
+  (*semaPt)++;
+  EnableInterrupts();
 }
 
 
@@ -150,7 +161,8 @@ void OS_Signal(int32_t *semaPt){
 void OS_MailBox_Init(void){
   // include data field and semaphore
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  mailboxData = -1;
+  OS_InitSemaphore(&mailCount, 0);
 }
 
 // ******** OS_MailBox_Send ************
@@ -161,7 +173,8 @@ void OS_MailBox_Init(void){
 // Errors: data lost if MailBox already has data
 void OS_MailBox_Send(uint32_t data){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  mailboxData = data;
+  OS_Signal(&mailCount); 
 }
 
 // ******** OS_MailBox_Recv ************
@@ -172,8 +185,12 @@ void OS_MailBox_Send(uint32_t data){
 // Inputs:  none
 // Outputs: data retreived
 // Errors:  none
-uint32_t OS_MailBox_Recv(void){ uint32_t data;
+uint32_t OS_MailBox_Recv(void){ 
+  uint32_t data;
   //***YOU IMPLEMENT THIS FUNCTION*****
+  OS_Wait(&mailCount);
+  data = mailboxData;
+
   return data;
 }
 
