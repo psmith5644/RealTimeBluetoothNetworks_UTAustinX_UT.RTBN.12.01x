@@ -34,7 +34,16 @@ SysTick_Handler                ; 1) Saves R0-R3,R12,LR,PC,PSR
     CPSIE   I                  ; 9) tasks run with interrupts enabled
     BX      LR                 ; 10) restore R0-R3,R12,LR,PC,PSR
 
-StartOS
+StartOS    
+    LDR     R0, =RunPt       ; Load address of RunPt into R0   
+    LDR     R1, [R0]         ; R1 = value of RunPt (pointer to current thread)   
+    LDR     SP, [R1]         ; Load new thread SP (SP = RunPt->sp)   
+    POP     {R4-R11}         ; Restore registers R4-R11   
+    POP     {R0-R3}          ; Restore registers R0-R3   
+    POP     {R12}            ; Restore register R12
+    ADD     SP, SP, #4       ; Discard LR from initial stack   
+    POP     {LR}             ; Load return address into LR   
+    ADD     SP, SP, #4       ; Discard PSR   
 
     CPSIE   I                  ; Enable interrupts at processor level
     BX      LR                 ; start first thread
