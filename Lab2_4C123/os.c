@@ -18,10 +18,12 @@ tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 int32_t mailboxData;
 int32_t mailCount;
+int32_t periodicSchedulerReload;
 
 typedef struct {
   void (*threadFunc)(void);
   int32_t period;
+  int32_t offset;
 } EventThread;
 
 #define NUM_EVENT_THREADS 2
@@ -138,11 +140,15 @@ int OS_AddPeriodicEventThreads(void(*thread1)(void), uint32_t period1,
   // this function is fixed for 2 threads so a simple solution for scheduling will work
   // find lowest common multiple and then ensure there is an offset
   // period of 1 will throw this off
-  int32_t lowest_common_multiple = period1 * period2;
   
+  periodicSchedulerReload = period1 * period2;
 
-  EventThread eventThread1 = {thread1, period1};
-  EventThread eventThread2 = {thread2, period2};
+  // Determine offsets
+  int32_t offset1 = 0;
+  int32_t offset2 = 0;
+  
+  EventThread eventThread1 = {thread1, period1, offset1};
+  EventThread eventThread2 = {thread2, period2, offset2};
 
   eventThreads[0] = eventThread1;
   eventThreads[1] = eventThread2; 
