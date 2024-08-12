@@ -80,7 +80,7 @@ int OS_AddThreads(void(*thread0)(void),
   tcbs[0].next = &tcbs[1];
   tcbs[1].next = &tcbs[2]; 
   tcbs[2].next = &tcbs[3]; 
-  tcbs[3].next = &tcbs[4];
+  tcbs[3].next = &tcbs[0];
 
   SetInitialStack(0); 
   Stacks[0][STACKSIZE-2] = (int32_t)(thread0); // PC
