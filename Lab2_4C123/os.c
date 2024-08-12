@@ -19,6 +19,13 @@ int32_t Stacks[NUMTHREADS][STACKSIZE];
 int32_t mailboxData;
 int32_t mailCount;
 
+typedef struct {
+  void (*threadFunc)(void);
+  int32_t period;
+} EventThread;
+
+#define NUM_EVENT_THREADS 2
+EventThread eventThreads[NUM_EVENT_THREADS];
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -67,6 +74,21 @@ int OS_AddThreads(void(*thread0)(void),
 // initialize RunPt
 // initialize four stacks, including initial PC
   //***YOU IMPLEMENT THIS FUNCTION*****
+  tcbs[0].next = &tcbs[1];
+  tcbs[1].next = &tcbs[2]; 
+  tcbs[2].next = &tcbs[3]; 
+  tcbs[3].next = &tcbs[4];
+
+  SetInitialStack(0); 
+  Stacks[0][STACKSIZE-2] = (int32_t)(thread0); // PC
+  SetInitialStack(1); 
+  Stacks[1][STACKSIZE-2] = (int32_t)(thread1); // PC
+  SetInitialStack(2); 
+  Stacks[2][STACKSIZE-2] = (int32_t)(thread2); // PC
+  SetInitialStack(3);
+  Stacks[3][STACKSIZE-2] = (int32_t)(thread3); // PC
+
+  RunPt = &tcbs[0];
 
   return 1;               // successful
 }
@@ -76,15 +98,27 @@ int OS_AddThreads(void(*thread0)(void),
 // This is needed during debugging and not part of final solution
 // Inputs: three pointers to a void/void foreground tasks
 // Outputs: 1 if successful, 0 if this thread can not be added
+  // initialize TCB circular list (same as RTOS project)
+  // initialize RunPt
+  // initialize four (three??) stacks, including initial PC
 int OS_AddThreads3(void(*task0)(void),
                  void(*task1)(void),
                  void(*task2)(void)){ 
-// initialize TCB circular list (same as RTOS project)
-// initialize RunPt
-// initialize four stacks, including initial PC
   //***YOU IMPLEMENT THIS FUNCTION*****
+  tcbs[0].next = &tcbs[1];
+  tcbs[1].next = &tcbs[2]; 
+  tcbs[2].next = &tcbs[0]; 
 
-  return 1;               // successful
+  SetInitialStack(0); 
+  Stacks[0][STACKSIZE-2] = (int32_t)(task0); // PC
+  SetInitialStack(1); 
+  Stacks[1][STACKSIZE-2] = (int32_t)(task1); // PC
+  SetInitialStack(2); 
+  Stacks[2][STACKSIZE-2] = (int32_t)(task2); // PC
+
+  RunPt = &tcbs[0];
+
+  return 1;  // successful
 }
                  
 //******** OS_AddPeriodicEventThreads ***************
@@ -100,6 +134,18 @@ int OS_AddThreads3(void(*task0)(void),
 int OS_AddPeriodicEventThreads(void(*thread1)(void), uint32_t period1,
   void(*thread2)(void), uint32_t period2){
   //***YOU IMPLEMENT THIS FUNCTION*****
+  // period given in units of whatever the timeslice is
+  // this function is fixed for 2 threads so a simple solution for scheduling will work
+  // find lowest common multiple and then ensure there is an offset
+  // period of 1 will throw this off
+  int32_t lowest_common_multiple = period1 * period2;
+  
+
+  EventThread eventThread1 = {thread1, period1};
+  EventThread eventThread2 = {thread2, period2};
+
+  eventThreads[0] = eventThread1;
+  eventThreads[1] = eventThread2; 
 
   return 1;
 }
