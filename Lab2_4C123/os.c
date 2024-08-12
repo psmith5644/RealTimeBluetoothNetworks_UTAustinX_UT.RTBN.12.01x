@@ -18,7 +18,8 @@ tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 int32_t mailboxData;
 int32_t mailCount;
-int32_t periodicSchedulerReload;
+int32_t eventThreadTimerMax;
+int32_t eventThreadTimerCount = 0;
 
 typedef struct {
   void (*threadFunc)(void);
@@ -141,7 +142,7 @@ int OS_AddPeriodicEventThreads(void(*thread1)(void), uint32_t period1,
   // find lowest common multiple and then ensure there is an offset
   // period of 1 will throw this off
   
-  periodicSchedulerReload = period1 * period2;
+  eventThreadTimerMax = period1 * period2;
 
   // Determine offsets
   int32_t offset1 = 0;
@@ -174,7 +175,13 @@ void Scheduler(void){ // every time slice
   // run any periodic event threads if needed
   // implement round robin scheduler, update RunPt
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  eventThreadTimerCount = (eventThreadTimerCount+1) % eventThreadTimerMax; // [0, eventThreadTimerMax-1]
+  for (int8_t i = 0; i < NUM_EVENT_THREADS; i++) {
+    if (eventThreadTimerCount % eventThreads[i].period == eventThreads[i].offset) {
+      eventThreads[i].threadFunc();
+    }
+  }
+  RunPt = RunPt->next;
 }
 
 // ******** OS_InitSemaphore ************
