@@ -203,12 +203,13 @@ void OS_InitSemaphore(int32_t *semaPt, int32_t value){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-  while (*semaPt == 0) {
-    // spinlock
-  }
-  DisableInterrupts();
-  (*semaPt)--;
-  EnableInterrupts();
+    DisableInterrupts();    
+    while (*semaPt == 0) {
+        EnableInterrupts();
+        DisableInterrupts();
+    }
+    (*semaPt)--;     
+    EnableInterrupts();
 }
 
 // ******** OS_Signal ************
