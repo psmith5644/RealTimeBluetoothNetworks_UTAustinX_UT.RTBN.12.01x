@@ -185,7 +185,16 @@ void OS_InitSemaphore(int32_t *semaPt, int32_t value){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-//***IMPLEMENT THIS***
+  DisableInterrupts();
+  (*semaPt)--;
+
+  if (*semaPt < 0) {
+    RunPt->blocked = semaPt;
+    EnableInterrupts();
+    OS_Suspend();
+  }
+
+  EnableInterrupts();
 }
 
 // ******** OS_Signal ************
