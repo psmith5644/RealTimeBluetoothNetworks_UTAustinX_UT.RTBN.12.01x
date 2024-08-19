@@ -19,7 +19,7 @@ void StartOS(void);
 struct tcb{
   int32_t *sp;       // pointer to stack (valid for threads not running
   struct tcb *next;  // linked-list pointer
-  int32_t blocked; // nonzero if blocked on this semaphore
+  int32_t * blocked; // nonzero if blocked on this semaphore
   int32_t sleeping; // nonzero if this thread is sleeping
 };
 
