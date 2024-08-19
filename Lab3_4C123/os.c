@@ -62,6 +62,13 @@ static void wakeupBlockedThread(int32_t * semaPt) {
   threadPtr->blocked = 0;
 }
 
+// ******** isThreadReady ************
+// Tests whether a thread is ready to be run
+// Input: thread to test
+// Output: None
+static int32_t isThreadReady(tcbType * threadPtr) {
+  return (int32_t)(threadPtr->blocked == 0 && threadPtr->sleeping == 0);
+}
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -161,7 +168,12 @@ void OS_Launch(uint32_t theTimeSlice){
 }
 // runs every ms
 void Scheduler(void){ // every time slice
-// ROUND ROBIN, skip blocked and sleeping threads
+  // ROUND ROBIN, skip blocked and sleeping threads
+  RunPt = RunPt->next;
+
+  while (!isThreadReady(RunPt)) {
+    RunPt = RunPt->next;
+  }
 }
 
 //******** OS_Suspend ***************
