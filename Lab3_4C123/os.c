@@ -28,6 +28,8 @@ tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 
+void SetInitialStack(int i);
+
 // ******** initializeThread ************
 // Initializes a thread's stack and tcb data
 // Input: the number of the thread to initialize
@@ -44,6 +46,20 @@ static void initializeThread(int threadNum) {
   }
 
   tcbs[threadNum].next = &tcbs[threadNum+1];
+}
+
+// ******** wakeupBlockedThread ************
+// Searches threads for next thread blocked by semaphore
+// Input: pointer to semaphore that some thread(s) are blocked on
+// Output: None
+static void wakeupBlockedThread(int32_t * semaPt) {
+  tcbType * threadPtr = RunPt->next;
+
+  while (threadPtr->blocked != semaPt) {
+    threadPtr = threadPtr->next;
+  }
+
+  threadPtr->blocked = 0;
 }
 
 
@@ -204,7 +220,14 @@ void OS_Wait(int32_t *semaPt){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Signal(int32_t *semaPt){
-//***IMPLEMENT THIS***
+  DisableInterrupts();
+  (*semaPt)++;
+
+  if (*semaPt <= 0) {
+    wakeupBlockedThread(semaPt);
+  } 
+
+  EnableInterrupts();
 }
 
 #define FSIZE 10    // can be any size
