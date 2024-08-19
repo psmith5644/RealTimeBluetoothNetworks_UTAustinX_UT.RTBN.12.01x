@@ -28,6 +28,24 @@ tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 
+// ******** initializeThread ************
+// Initializes a thread's stack and tcb data
+// Input: the number of the thread to initialize
+// Output: None
+static void initializeThread(int threadNum) {
+  SetInitialStack(threadNum);
+  
+  tcbs[threadNum].blocked = 0;
+  tcbs[threadNum].sleeping = 0;
+
+  if (threadNum == NUMTHREADS-1) {
+    tcbs[threadNum].next = &tcbs[0];
+    return;
+  }
+
+  tcbs[threadNum].next = &tcbs[threadNum+1];
+}
+
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -73,6 +91,18 @@ int OS_AddThreads(void(*thread0)(void),
                   void(*thread4)(void),
                   void(*thread5)(void)){
   // **similar to Lab 2. initialize as not blocked, not sleeping****
+  for (int i = 0; i < NUMTHREADS; i++) {
+    initializeThread(i);
+  }
+
+  Stacks[0][STACKSIZE-2] = (int32_t)(thread0); // PC
+  Stacks[1][STACKSIZE-2] = (int32_t)(thread1); // PC
+  Stacks[2][STACKSIZE-2] = (int32_t)(thread2); // PC
+  Stacks[3][STACKSIZE-2] = (int32_t)(thread3); // PC
+  Stacks[4][STACKSIZE-2] = (int32_t)(thread4); // PC
+  Stacks[5][STACKSIZE-2] = (int32_t)(thread5); // PC
+
+  RunPt = &tcbs[0];
 
   return 1;               // successful
 }
