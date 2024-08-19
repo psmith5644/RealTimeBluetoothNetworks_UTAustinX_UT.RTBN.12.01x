@@ -2292,7 +2292,7 @@ uint32_t BSP_Time_Get(void){
 // Outputs: none
 void BSP_Delay1ms(uint32_t n){
   while(n){
-    parrotdelay(13000);    // 1 msec, tuned at 80 MHz, originally part of LCD module
+    parrotdelay(23746);    // 1 msec, tuned at 80 MHz, originally part of LCD module
     n--;
   }
 }
