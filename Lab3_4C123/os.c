@@ -249,13 +249,30 @@ uint32_t Fifo[FSIZE];
 int32_t CurrentSize;// 0 means FIFO empty, FSIZE means full
 uint32_t LostData;  // number of lost pieces of data
 
+// ******** incrementFifoIndex ************
+// Increments and wraps a Fifo indexer, i.e. PutI and GetI
+// Input: the index to increment
+// Output: None
+static void incrementFifoIndex(uint32_t * index) {
+  if (*index == FSIZE-1) {
+    *index = 0;
+  } 
+  else {
+    (*index)++;
+  }
+}
+
 // ******** OS_FIFO_Init ************
 // Initialize FIFO.  
 // One event thread producer, one main thread consumer
 // Inputs:  none
 // Outputs: none
 void OS_FIFO_Init(void){
-//***IMPLEMENT THIS***
+  PutI = Fifo[0];
+  GetI = Fifo[0];
+  LostData = 0;
+
+  OS_InitSemaphore(&CurrentSize, 0);
 }
 
 // ******** OS_FIFO_Put ************
@@ -265,10 +282,16 @@ void OS_FIFO_Init(void){
 // Inputs:  data to be stored
 // Outputs: 0 if successful, -1 if the FIFO is full
 int OS_FIFO_Put(uint32_t data){
-//***IMPLEMENT THIS***
+  if (CurrentSize == FSIZE) {
+    LostData++;
+    return -1; // full
+  }
+
+  Fifo[PutI] = data;
+  incrementFifoIndex(&PutI);
+  OS_Signal(&CurrentSize);
 
   return 0;   // success
-
 }
 
 // ******** OS_FIFO_Get ************
@@ -277,8 +300,12 @@ int OS_FIFO_Put(uint32_t data){
 // do block if empty
 // Inputs:  none
 // Outputs: data retrieved
-uint32_t OS_FIFO_Get(void){uint32_t data;
-//***IMPLEMENT THIS***
+uint32_t OS_FIFO_Get(void){
+  uint32_t data;
+
+  OS_Wait(&CurrentSize);
+  data = Fifo[GetI];
+  incrementFifoIndex(&GetI);
 
   return data;
 }
