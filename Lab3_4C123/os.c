@@ -175,7 +175,7 @@ void OS_Sleep(uint32_t sleepTime){
 //          initial value of semaphore
 // Outputs: none
 void OS_InitSemaphore(int32_t *semaPt, int32_t value){
-//***IMPLEMENT THIS***
+  *semaPt = value;
 }
 
 // ******** OS_Wait ************
