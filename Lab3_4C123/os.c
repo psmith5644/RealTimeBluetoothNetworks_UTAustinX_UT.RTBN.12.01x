@@ -50,6 +50,7 @@ static void initializeThread(int threadNum) {
 
 // ******** wakeupBlockedThread ************
 // Searches threads for next thread blocked by semaphore
+// Called with interrupts disabled
 // Input: pointer to semaphore that some thread(s) are blocked on
 // Output: None
 static void wakeupBlockedThread(int32_t * semaPt) {
