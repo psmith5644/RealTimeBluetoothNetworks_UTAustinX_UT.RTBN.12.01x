@@ -219,7 +219,6 @@ void OS_Wait(int32_t *semaPt){
 
   if (*semaPt < 0) {
     RunPt->blocked = semaPt;
-    EnableInterrupts();
     OS_Suspend();
   }
 
