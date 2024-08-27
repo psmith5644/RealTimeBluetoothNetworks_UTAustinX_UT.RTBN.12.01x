@@ -20,7 +20,7 @@ struct tcb{
   int32_t *sp;       // pointer to stack (valid for threads not running
   struct tcb *next;  // linked-list pointer
   int32_t * blocked; // nonzero if blocked on this semaphore
-  int32_t sleeping; // nonzero if this thread is sleeping
+  uint32_t sleepTime; // nonzero if this thread is sleeping
 };
 
 typedef struct tcb tcbType;
@@ -38,7 +38,7 @@ static void initializeThread(int threadNum) {
   SetInitialStack(threadNum);
   
   tcbs[threadNum].blocked = 0;
-  tcbs[threadNum].sleeping = 0;
+  tcbs[threadNum].sleepTime = 0;
 
   if (threadNum == NUMTHREADS-1) {
     tcbs[threadNum].next = &tcbs[0];
@@ -68,7 +68,8 @@ static void wakeupBlockedThread(int32_t * semaPt) {
 // Input: thread to test
 // Output: None
 static int32_t isThreadReady(tcbType * threadPtr) {
-  return (int32_t)(threadPtr->blocked == 0 && threadPtr->sleeping == 0);
+  return (int32_t)(threadPtr->blocked == 0 && threadPtr->sleepTime == 0);
+}
 }
 
 // ******** OS_Init ************
