@@ -33,6 +33,12 @@ A superior implementation would remove a blocked thread from the linked list of 
 This would ensure that whenever a context switch occurs, the scheduler does not waste time by having to check blocked threads to see if they are ready-to-run.  
 It would also allow the RTOS to track the order in which threads on a particular semaphore blocked, and unblock the one that has been blocked longest.
 
+### FIFO Queue
+A global FIFO queue was implemented. It consists of the functions Init, Get, and Put.  Put is designed to be called from a non-blocking event thread.
+Get is designed to be called from a blocking main thread.  This means that Put will not wait on a semaphore that indicates the space left in the FIFO.
+As a result, data may be lost.  In this case, lost data is accepted; 
+in other scenarios, this may be unacceptable, and the implementation would need to be changed such that Put is intended to be called from a blocking main thread.
+
 ### Thread Sleeping
 I also implemented the ability for threads to sleep.  This functionality allows a thread to voluntarily give up the processor to wait for a specific amount of time. 
 This is used, for example, by sensors that have a known sample rate; a thread can initiate a sample, sleep until the sample is completed, and then do some computation with the data.
