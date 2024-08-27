@@ -1050,14 +1050,16 @@ uint8_t static writedata(uint8_t c) {
 
 #else
   //Keil uVision Code
-  __asm void
-  parrotdelay(uint32_t ulCount)
-  {
-    subs    r0, #1
-    bne     parrotdelay
-    bx      lr
-  }
-
+    void parrotdelay(uint32_t ulCount) {
+        __asm__ __volatile__ (
+            "1: \n\t"                         // Label '1'
+            "subs    %[count], %[count], #1 \n\t"  // Subtract 1 from count
+            "bne     1b \n\t"                 // If not zero, branch to label '1'
+            : [count] "+r" (ulCount)          // Output operand
+            :                                 // No input-only operands
+            :                                 // No clobbered registers
+        );
+    }
 #endif
 
 
@@ -2289,7 +2291,8 @@ uint32_t BSP_Time_Get(void){
 // Outputs: none
 void BSP_Delay1ms(uint32_t n){
   while(n){
-    parrotdelay(23746);    // 1 msec, tuned at 80 MHz, originally part of LCD module
+    //parrotdelay(23746);    // 1 msec, tuned at 80 MHz, originally part of LCD module
+    parrotdelay(12500); // modified version because original was not accurate to 1 ms with default optimization
     n--;
   }
 }
