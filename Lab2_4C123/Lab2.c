@@ -343,12 +343,12 @@ void Task4(void){int32_t voltData,tempData;
   while(1){
     TExaS_Task4();     // records system time in array, toggles virtual logic analyzer
     Profile_Toggle4(); // viewed by a real logic analyzer to know Task4 started
-    BSP_TempSensor_Start();
-    done = 0;
-    while(done == 0){
-      done = BSP_TempSensor_End(&voltData,&tempData); // waits about 1 sec
-    }
-    TemperatureData = tempData/10000;
+    // BSP_TempSensor_Start();
+    // done = 0;
+    // while(done == 0){
+    //   done = BSP_TempSensor_End(&voltData,&tempData); // waits about 1 sec
+    // }
+    // TemperatureData = tempData/10000;
   }
 }
 /* ****************************************** */
