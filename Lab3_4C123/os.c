@@ -28,6 +28,15 @@ tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
 
+typedef struct {
+  void (*thread)(void);
+  uint32_t period;
+  uint32_t timeUntilExecute;
+} eventThread;
+
+eventThread eventThreads[NUMPERIODIC];
+
+
 void SetInitialStack(int i);
 
 // ******** initializeThread ************
@@ -91,6 +100,28 @@ static void updateThreadSleepTimers(void) {
   EnableInterrupts();
 }
 
+static void decrementEventTimer(int32_t i, uint32_t timeElapsed) {
+  if (eventThreads[i].timeUntilExecute >= timeElapsed) {
+    eventThreads[i].timeUntilExecute -= timeElapsed;
+  } 
+  else {
+    eventThreads[i].timeUntilExecute = 0;
+  }
+}
+
+static void runPeriodicThreads(void) {
+  int32_t const timeElapsed = MS_PER_SECOND / UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC;
+  DisableInterrupts();
+  for (int i = 0; i < NUMPERIODIC; i++) {
+    decrementEventTimer(i, timeElapsed);
+    if (eventThreads[i].timeUntilExecute == 0) {
+      eventThreads[i].thread();
+      eventThreads[i].timeUntilExecute = eventThreads[i].period;
+    }
+  }
+  EnableInterrupts();
+}
+
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
 // Initialize OS controlled I/O: periodic interrupt, bus clock as fast as possible
@@ -102,6 +133,7 @@ void OS_Init(void){
   BSP_Clock_InitFastest();// set processor clock to fastest speed
   // perform any initializations needed
   BSP_PeriodicTask_Init(&updateThreadSleepTimers, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
+  BSP_PeriodicTask_InitB(&runPeriodicThreads, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
 }
 
 void SetInitialStack(int i){
@@ -164,16 +196,19 @@ int OS_AddThreads(void(*thread0)(void),
 // These threads can call OS_Signal
 // In Lab 3 this will be called exactly twice
 int OS_AddPeriodicEventThread(void(*thread)(void), uint32_t period){
-// ****IMPLEMENT THIS****
+  static uint32_t eventThreadsSize = 0;
+
+  if (eventThreadsSize >= NUMPERIODIC) {
+    return 0;
+  } 
+
+  eventThreads[eventThreadsSize] = (eventThread){thread, period, period};
+  eventThreadsSize++;
+
   return 1;
-
 }
 
-void static runperiodicevents(void){
-// ****IMPLEMENT THIS****
-// **RUN PERIODIC THREADS, DECREMENT SLEEP COUNTERS
 
-}
 
 //******** OS_Launch ***************
 // Start the scheduler, enable interrupts
