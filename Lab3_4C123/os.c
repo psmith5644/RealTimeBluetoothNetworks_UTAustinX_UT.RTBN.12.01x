@@ -84,7 +84,7 @@ static void decrementSleepTimer(int32_t const i, int32_t const timeElapsed) {
 #define MS_PER_SECOND 1000
 static void updateThreadSleepTimers(void) {
   DisableInterrupts();
-  int32_t timeElapsed = MS_PER_SECOND / UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC;
+  int32_t const timeElapsed = MS_PER_SECOND / UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC;
   for (int i = 0; i < NUMTHREADS; i++) {
     decrementSleepTimer(i, timeElapsed);
   }
