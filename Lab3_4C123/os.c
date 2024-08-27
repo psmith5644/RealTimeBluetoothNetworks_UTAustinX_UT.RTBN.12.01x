@@ -195,8 +195,10 @@ void OS_Suspend(void){
 // output: none
 // OS_Sleep(0) implements cooperative multitasking
 void OS_Sleep(uint32_t sleepTime){
-// set sleep parameter in TCB
-// suspend, stops running
+  DisableInterrupts();
+  RunPt->sleepTime = sleepTime;
+  EnableInterrupts();
+  OS_Suspend();
 }
 
 // ******** OS_InitSemaphore ************
