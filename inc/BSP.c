@@ -1060,7 +1060,6 @@ uint8_t static writedata(uint8_t c) {
             :                                 // No clobbered registers
         );
     }
-
 #endif
 
 
@@ -2292,7 +2291,8 @@ uint32_t BSP_Time_Get(void){
 // Outputs: none
 void BSP_Delay1ms(uint32_t n){
   while(n){
-    parrotdelay(23746);    // 1 msec, tuned at 80 MHz, originally part of LCD module
+    //parrotdelay(23746);    // 1 msec, tuned at 80 MHz, originally part of LCD module
+    parrotdelay(12500); // modified version because original was not accurate to 1 ms with default optimization
     n--;
   }
 }
