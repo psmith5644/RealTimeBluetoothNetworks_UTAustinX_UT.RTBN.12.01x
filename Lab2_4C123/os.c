@@ -16,7 +16,19 @@ void StartOS(void);
 tcbType tcbs[NUMTHREADS];
 tcbType *RunPt;
 int32_t Stacks[NUMTHREADS][STACKSIZE];
+int32_t mailboxData;
+int32_t mailCount;
+int32_t eventThreadTimerMax;
+int32_t eventThreadTimerCount = 0;
 
+typedef struct {
+  void (*threadFunc)(void);
+  int32_t period;
+  int32_t offset;
+} EventThread;
+
+#define NUM_EVENT_THREADS 2
+EventThread eventThreads[NUM_EVENT_THREADS];
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -34,7 +46,22 @@ void OS_Init(void){
 
 void SetInitialStack(int i){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  tcbs[i].sp = &Stacks[i][STACKSIZE-16]; // thread stack pointer
+  Stacks[i][STACKSIZE-1] = 0x01000000; // Thumb bit
+  Stacks[i][STACKSIZE-3] = 0x14141414; // R14
+  Stacks[i][STACKSIZE-4] = 0x12121212; // R12
+  Stacks[i][STACKSIZE-5] = 0x03030303; // R3
+  Stacks[i][STACKSIZE-6] = 0x02020202; // R2
+  Stacks[i][STACKSIZE-7] = 0x01010101; // R1
+  Stacks[i][STACKSIZE-8] = 0x00000000; // R0
+  Stacks[i][STACKSIZE-9] = 0x11111111; // R11
+  Stacks[i][STACKSIZE-10] = 0x10101010; // R10
+  Stacks[i][STACKSIZE-11] = 0x09090909; // R9
+  Stacks[i][STACKSIZE-12] = 0x08080808; // R8
+  Stacks[i][STACKSIZE-13] = 0x07070707; // R7
+  Stacks[i][STACKSIZE-14] = 0x06060606; // R6
+  Stacks[i][STACKSIZE-15] = 0x05050505; // R5
+  Stacks[i][STACKSIZE-16] = 0x04040404; // R4
 }
 
 //******** OS_AddThreads ***************
@@ -50,6 +77,21 @@ int OS_AddThreads(void(*thread0)(void),
 // initialize RunPt
 // initialize four stacks, including initial PC
   //***YOU IMPLEMENT THIS FUNCTION*****
+  tcbs[0].next = &tcbs[1];
+  tcbs[1].next = &tcbs[2]; 
+  tcbs[2].next = &tcbs[3]; 
+  tcbs[3].next = &tcbs[0];
+
+  SetInitialStack(0); 
+  Stacks[0][STACKSIZE-2] = (int32_t)(thread0); // PC
+  SetInitialStack(1); 
+  Stacks[1][STACKSIZE-2] = (int32_t)(thread1); // PC
+  SetInitialStack(2); 
+  Stacks[2][STACKSIZE-2] = (int32_t)(thread2); // PC
+  SetInitialStack(3);
+  Stacks[3][STACKSIZE-2] = (int32_t)(thread3); // PC
+
+  RunPt = &tcbs[0];
 
   return 1;               // successful
 }
@@ -59,15 +101,27 @@ int OS_AddThreads(void(*thread0)(void),
 // This is needed during debugging and not part of final solution
 // Inputs: three pointers to a void/void foreground tasks
 // Outputs: 1 if successful, 0 if this thread can not be added
+  // initialize TCB circular list (same as RTOS project)
+  // initialize RunPt
+  // initialize four (three??) stacks, including initial PC
 int OS_AddThreads3(void(*task0)(void),
                  void(*task1)(void),
                  void(*task2)(void)){ 
-// initialize TCB circular list (same as RTOS project)
-// initialize RunPt
-// initialize four stacks, including initial PC
   //***YOU IMPLEMENT THIS FUNCTION*****
+  tcbs[0].next = &tcbs[1];
+  tcbs[1].next = &tcbs[2]; 
+  tcbs[2].next = &tcbs[0]; 
 
-  return 1;               // successful
+  SetInitialStack(0); 
+  Stacks[0][STACKSIZE-2] = (int32_t)(task0); // PC
+  SetInitialStack(1); 
+  Stacks[1][STACKSIZE-2] = (int32_t)(task1); // PC
+  SetInitialStack(2); 
+  Stacks[2][STACKSIZE-2] = (int32_t)(task2); // PC
+
+  RunPt = &tcbs[0];
+
+  return 1;  // successful
 }
                  
 //******** OS_AddPeriodicEventThreads ***************
@@ -83,6 +137,22 @@ int OS_AddThreads3(void(*task0)(void),
 int OS_AddPeriodicEventThreads(void(*thread1)(void), uint32_t period1,
   void(*thread2)(void), uint32_t period2){
   //***YOU IMPLEMENT THIS FUNCTION*****
+  // period given in units of whatever the timeslice is
+  // this function is fixed for 2 threads so a simple solution for scheduling will work
+  // find lowest common multiple and then ensure there is an offset
+  // period of 1 will throw this off
+  
+  eventThreadTimerMax = period1 * period2;
+
+  // Determine offsets
+  int32_t offset1 = 0;
+  int32_t offset2 = 0;
+  
+  EventThread eventThread1 = {thread1, period1, offset1};
+  EventThread eventThread2 = {thread2, period2, offset2};
+
+  eventThreads[0] = eventThread1;
+  eventThreads[1] = eventThread2; 
 
   return 1;
 }
@@ -105,7 +175,13 @@ void Scheduler(void){ // every time slice
   // run any periodic event threads if needed
   // implement round robin scheduler, update RunPt
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  eventThreadTimerCount = (eventThreadTimerCount+1) % eventThreadTimerMax; // [0, eventThreadTimerMax-1]
+  for (int8_t i = 0; i < NUM_EVENT_THREADS; i++) {
+    if (eventThreadTimerCount % eventThreads[i].period == eventThreads[i].offset) {
+      eventThreads[i].threadFunc();
+    }
+  }
+  RunPt = RunPt->next;
 }
 
 // ******** OS_InitSemaphore ************
@@ -115,7 +191,9 @@ void Scheduler(void){ // every time slice
 // Outputs: none
 void OS_InitSemaphore(int32_t *semaPt, int32_t value){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  DisableInterrupts();
+  *semaPt = value;
+  EnableInterrupts();
 }
 
 // ******** OS_Wait ************
@@ -125,7 +203,13 @@ void OS_InitSemaphore(int32_t *semaPt, int32_t value){
 // Inputs:  pointer to a counting semaphore
 // Outputs: none
 void OS_Wait(int32_t *semaPt){
-
+    DisableInterrupts();    
+    while (*semaPt == 0) {
+        EnableInterrupts();
+        DisableInterrupts();
+    }
+    (*semaPt)--;     
+    EnableInterrupts();
 }
 
 // ******** OS_Signal ************
@@ -136,7 +220,9 @@ void OS_Wait(int32_t *semaPt){
 // Outputs: none
 void OS_Signal(int32_t *semaPt){
 //***YOU IMPLEMENT THIS FUNCTION*****
-
+  DisableInterrupts();
+  (*semaPt)++;
+  EnableInterrupts();
 }
 
 
@@ -150,7 +236,8 @@ void OS_Signal(int32_t *semaPt){
 void OS_MailBox_Init(void){
   // include data field and semaphore
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  mailboxData = -1;
+  OS_InitSemaphore(&mailCount, 0);
 }
 
 // ******** OS_MailBox_Send ************
@@ -161,7 +248,8 @@ void OS_MailBox_Init(void){
 // Errors: data lost if MailBox already has data
 void OS_MailBox_Send(uint32_t data){
   //***YOU IMPLEMENT THIS FUNCTION*****
-
+  mailboxData = data;
+  OS_Signal(&mailCount); 
 }
 
 // ******** OS_MailBox_Recv ************
@@ -172,8 +260,12 @@ void OS_MailBox_Send(uint32_t data){
 // Inputs:  none
 // Outputs: data retreived
 // Errors:  none
-uint32_t OS_MailBox_Recv(void){ uint32_t data;
+uint32_t OS_MailBox_Recv(void){ 
+  uint32_t data;
   //***YOU IMPLEMENT THIS FUNCTION*****
+  OS_Wait(&mailCount);
+  data = mailboxData;
+
   return data;
 }
 
