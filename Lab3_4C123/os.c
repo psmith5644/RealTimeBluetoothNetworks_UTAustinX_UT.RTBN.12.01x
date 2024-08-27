@@ -109,8 +109,9 @@ static void decrementEventTimer(int32_t i, uint32_t timeElapsed) {
   }
 }
 
+#define UPDATE_PERIODIC_EVENT_THREAD_TIMER_FREQ 1000
 static void runPeriodicThreads(void) {
-  int32_t const timeElapsed = MS_PER_SECOND / UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC;
+  int32_t const timeElapsed = MS_PER_SECOND / UPDATE_PERIODIC_EVENT_THREAD_TIMER_FREQ;
   DisableInterrupts();
   for (int i = 0; i < NUMPERIODIC; i++) {
     decrementEventTimer(i, timeElapsed);
@@ -121,6 +122,7 @@ static void runPeriodicThreads(void) {
   }
   EnableInterrupts();
 }
+
 
 // ******** OS_Init ************
 // Initialize operating system, disable interrupts
@@ -133,7 +135,7 @@ void OS_Init(void){
   BSP_Clock_InitFastest();// set processor clock to fastest speed
   // perform any initializations needed
   BSP_PeriodicTask_Init(&updateThreadSleepTimers, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
-  BSP_PeriodicTask_InitB(&runPeriodicThreads, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
+  BSP_PeriodicTask_InitB(&runPeriodicThreads, UPDATE_PERIODIC_EVENT_THREAD_TIMER_FREQ, 2);
 }
 
 void SetInitialStack(int i){
