@@ -70,6 +70,25 @@ static void wakeupBlockedThread(int32_t * semaPt) {
 static int32_t isThreadReady(tcbType * threadPtr) {
   return (int32_t)(threadPtr->blocked == 0 && threadPtr->sleepTime == 0);
 }
+
+static void decrementSleepTimer(int32_t const i, int32_t const timeElapsed) {
+  if (tcbs[i].sleepTime >= timeElapsed) {
+    tcbs[i].sleepTime -= timeElapsed;
+  } 
+  else {
+    tcbs[i].sleepTime = 0;
+  }
+}
+
+#define UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC 100
+#define MS_PER_SECOND 1000
+static void updateThreadSleepTimers(void) {
+  DisableInterrupts();
+  int32_t timeElapsed = MS_PER_SECOND / UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC;
+  for (int i = 0; i < NUMTHREADS; i++) {
+    decrementSleepTimer(i, timeElapsed);
+  }
+  EnableInterrupts();
 }
 
 // ******** OS_Init ************
@@ -82,6 +101,7 @@ void OS_Init(void){
   DisableInterrupts();
   BSP_Clock_InitFastest();// set processor clock to fastest speed
   // perform any initializations needed
+  BSP_PeriodicTask_Init(&updateThreadSleepTimers, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
 }
 
 void SetInitialStack(int i){
