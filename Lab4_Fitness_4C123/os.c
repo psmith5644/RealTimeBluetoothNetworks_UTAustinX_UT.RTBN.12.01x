@@ -223,13 +223,27 @@ void OS_Launch(uint32_t theTimeSlice){
   STCTRL = 0x00000007;         // enable, core clock and interrupt arm
   StartOS();                   // start on the first task
 }
+
+#define LOWEST_PRIORITY 255
 // runs every ms
 void Scheduler(void){      // every time slice
-// ****IMPLEMENT THIS****
-// look at all threads in TCB list choose
-// highest priority thread not blocked and not sleeping 
-// If there are multiple highest priority (not blocked, not sleeping) run these round robin
+  // ****IMPLEMENT THIS****
+  // look at all threads in TCB list choose
+  // highest priority thread not blocked and not sleeping 
+  // If there are multiple highest priority (not blocked, not sleeping) run these round robin
+  tcbType * threadPt = RunPt;
+  tcbType * highestPriorityThread;
+  uint32_t highestPriorityLevel = LOWEST_PRIORITY;
 
+  do {
+    threadPt = threadPt->next;
+    if (isThreadReady(threadPt) && threadPt->priority < highestPriorityLevel) {
+      highestPriorityThread = threadPt;
+      highestPriorityLevel = highestPriorityThread->priority;
+    }
+  } while (threadPt != RunPt);
+
+  RunPt = highestPriorityThread;
 }
 
 //******** OS_Suspend ***************
