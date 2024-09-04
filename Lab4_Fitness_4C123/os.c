@@ -22,6 +22,7 @@ struct tcb{
   struct tcb *next;  // linked-list pointer
   int32_t * blocked; // nonzero if blocked on this semaphore
   uint32_t sleepTime; // nonzero if this thread is sleeping
+  uint32_t priority;
 };
 typedef struct tcb tcbType;
 tcbType tcbs[NUMTHREADS];
