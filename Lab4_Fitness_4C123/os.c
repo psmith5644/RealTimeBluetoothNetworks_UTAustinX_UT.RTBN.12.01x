@@ -175,7 +175,6 @@ int OS_AddThreads(void(*thread0)(void), uint32_t p0,
                   void(*thread5)(void), uint32_t p5,
                   void(*thread6)(void), uint32_t p6,
                   void(*thread7)(void), uint32_t p7){
-// **similar to Lab 3. initialize priority field****
   for (int i = 0; i < NUMTHREADS; i++) {
     initializeThread(i);
   }
@@ -186,6 +185,17 @@ int OS_AddThreads(void(*thread0)(void), uint32_t p0,
   Stacks[3][STACKSIZE-2] = (int32_t)(thread3); // PC
   Stacks[4][STACKSIZE-2] = (int32_t)(thread4); // PC
   Stacks[5][STACKSIZE-2] = (int32_t)(thread5); // PC
+  Stacks[6][STACKSIZE-2] = (int32_t)(thread6); // PC
+  Stacks[7][STACKSIZE-2] = (int32_t)(thread7); // PC
+
+  tcbs[0].priority = p0;
+  tcbs[1].priority = p1;
+  tcbs[2].priority = p2;
+  tcbs[3].priority = p3;
+  tcbs[4].priority = p4;
+  tcbs[5].priority = p5;
+  tcbs[6].priority = p6;
+  tcbs[7].priority = p7;
 
   RunPt = &tcbs[0];
 
