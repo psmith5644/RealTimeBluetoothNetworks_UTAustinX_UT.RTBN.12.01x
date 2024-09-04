@@ -137,7 +137,7 @@ void OS_Init(void){
 // perform any initializations needed, 
 // set up periodic timer to run runperiodicevents to implement sleeping
   BSP_PeriodicTask_Init(&updateThreadSleepTimers, UPDATE_THREAD_SLEEP_TIMERS_EXECUTIONS_PER_SEC, 2);
-  BSP_PeriodicTask_InitB(&runPeriodicThreads, UPDATE_PERIODIC_EVENT_THREAD_TIMER_FREQ, 2);
+  // BSP_PeriodicTask_InitB(&runPeriodicThreads, UPDATE_PERIODIC_EVENT_THREAD_TIMER_FREQ, 2);
 }
 
 
