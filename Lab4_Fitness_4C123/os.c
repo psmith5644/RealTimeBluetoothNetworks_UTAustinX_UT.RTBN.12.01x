@@ -442,25 +442,22 @@ int32_t *edgeSemaphore;
 // Inputs:  semaphore to signal
 //          priority
 // Outputs: none
-void OS_EdgeTrigger_Init(int32_t *semaPt, uint8_t priority){
+void OS_EdgeTrigger_Init(int32_t *semaPt, uint8_t priority) {
 	edgeSemaphore = semaPt;
-//***IMPLEMENT THIS***
-// 1) activate clock for Port D
-// allow time for clock to stabilize
-// 2) no need to unlock PD6
-// 3) disable analog on PD6
-// 4) configure PD6 as GPIO
-// 5) make PD6 input
-// 6) disable alt funct on PD6
-// disable pull-up on PD6
-// 7) enable digital I/O on PD6  
-// (d) PD6 is edge-sensitive 
-//     PD6 is not both edges 
-//     PD6 is falling edge event 
-// (e) clear PD6 flag
-// (f) arm interrupt on PD6
-// priority on Port D edge trigger is NVIC_PRI0_R	31 � 29
-// enable is bit 3 in NVIC_EN0_R
+  SYSCTL_RCGCGPIO_R |= SYSCTL_RCGC2_GPIOD; // activate clock for Port D
+  while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R3) == 0) {} // allow time for clock to stabilize
+  GPIO_PORTD_AMSEL_R &= ~(1 << 6); // disable analog on PD6
+  GPIO_PORTD_DIR_R &= ~(1 << 6);   // make PD6 input
+  GPIO_PORTD_AFSEL_R &= ~(1 << 6); // disable alt funct on PD6
+  GPIO_PORTD_PUR_R &= ~(1 << 6);   // disable pull-up on PD6
+  GPIO_PORTD_DEN_R |= (1 << 6);    // enable digital I/O on PD6  
+  GPIO_PORTD_IS_R &= ~(1 << 6);    // PD6 is edge-sensitive 
+  GPIO_PORTD_IBE_R &= ~(1 << 6);   // PD6 is not both edges 
+  GPIO_PORTD_IEV_R &= ~(1 << 6);   // PD6 is falling edge event 
+  GPIO_PORTD_ICR_R |= (1 << 6);    // clear PD6 flag
+  GPIO_PORTD_IM_R |= (1 << 6);     // arm interrupt on PD6
+  NVIC_PRI0_R = (NVIC_PRI0_R & ~NVIC_PRI0_INT3_M) | (priority << NVIC_PRI0_INT3_S); // set interrupt priority
+  NVIC_EN0_R |= (1 << 3); // enable is bit 3 in NVIC_EN0_R
  }
 
 // ******** OS_EdgeTrigger_Restart ************
