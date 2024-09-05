@@ -333,16 +333,17 @@ void Task4(void){int32_t voltData,tempData;
     Profile_Toggle4(); // viewed by the logic analyzer to know Task4 started
 
     OS_Wait(&I2Cmutex);
-    BSP_TempSensor_Start();
+    // BSP_TempSensor_Start();
     OS_Signal(&I2Cmutex);
     done = 0;
     OS_Sleep(1000);    // waits about 1 sec
     while(done == 0){
       OS_Wait(&I2Cmutex);
-      done = BSP_TempSensor_End(&voltData, &tempData);
+      // done = BSP_TempSensor_End(&voltData, &tempData);
+      done = 1;
       OS_Signal(&I2Cmutex);
     }
-    TemperatureData = tempData/10000;
+    // TemperatureData = tempData/10000;
   }
 }
 /* ****************************************** */
