@@ -50,3 +50,15 @@ Periodic Timers were used to track the sleep timers of sleeping threads and to s
 These event threads occur at regular intervals, have very short runtimes, and do not block.
 An Event Thread struct is used to track the period of each periodic thread and the time remaining until its next desired execution.
 A periodic timer decreases the time remaining until execution for each event thread and runs the thread at the appropriate time.
+
+# Lab 4
+
+### Priority Scheduler
+Implemented a simple priority scheduler that always runs the highest priority thread among those available. When multiple threads equal the highest priority, the scheduler runs them in round-robin order. 
+
+### Replace Periodic Event Threads
+Periodic event threads have had their logic moved to main threads.  They wait on semaphores that are signalled at the appropriate period.  This implementation accounts for priority, which was not possible with the previous implementation that simply ran the event threads periodically. A periodic timer that decrements thread sleep countdowns remains.  
+
+### Button Debouncing with Interrupts
+An edge-triggered interrupt was enabled for Button 1 of the TI Educational BoosterPack MKII. The ISR simply signals a semaphore, allowing a main thread to proceed with the response to the button press. 
+Button debouncing is handled by masking the interrupt temporarily for a short period after an interrupt from the button press occurs, and only then reading the state of the button signal.
