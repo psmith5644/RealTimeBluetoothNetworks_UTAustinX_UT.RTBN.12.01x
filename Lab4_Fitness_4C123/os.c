@@ -471,10 +471,9 @@ void OS_EdgeTrigger_Restart(void){
 // clear flag6
 }
 void GPIOPortD_Handler(void){
-//***IMPLEMENT THIS***
-	// step 1 acknowledge by clearing flag
-  // step 2 signal semaphore (no need to run scheduler)
-  // step 3 disarm interrupt to prevent bouncing to create multiple signals
+	GPIO_PORTD_ICR_R |= (1 << 6); // acknowledge by clearing flag
+  OS_Signal(edgeSemaphore); // signal semaphore (no need to run scheduler)
+  GPIO_PORTD_IM_R &= ~(1 << 6); // disarm interrupt to prevent bouncing to create multiple signals
 }
 
 
