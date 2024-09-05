@@ -466,10 +466,10 @@ void OS_EdgeTrigger_Init(int32_t *semaPt, uint8_t priority) {
 // Inputs:  none
 // Outputs: none
 void OS_EdgeTrigger_Restart(void){
-//***IMPLEMENT THIS***
-// rearm interrupt 3 in NVIC
-// clear flag6
+  GPIO_PORTD_ICR_R |= (1 << 6); // clear PD6 flag
+  GPIO_PORTD_IM_R |= (1 << 6); // rearm interrupt
 }
+
 void GPIOPortD_Handler(void){
 	GPIO_PORTD_ICR_R |= (1 << 6); // acknowledge by clearing flag
   OS_Signal(edgeSemaphore); // signal semaphore (no need to run scheduler)
