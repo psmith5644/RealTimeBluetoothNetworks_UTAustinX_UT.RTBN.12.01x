@@ -62,3 +62,15 @@ Periodic event threads have had their logic moved to main threads.  They wait on
 ### Button Debouncing with Interrupts
 An edge-triggered interrupt was enabled for Button 1 of the TI Educational BoosterPack MKII. The ISR simply signals a semaphore, allowing a main thread to proceed with the response to the button press. 
 Button debouncing is handled by masking the interrupt temporarily for a short period after an interrupt from the button press occurs, and only then reading the state of the button signal.
+
+# Lab 5
+
+# Simple Write-once File System
+Implemented a simple write-once file system.  The system allows for files to be created, appended to and read, though not to be deleted or edited. 
+Files can be appended to and read in 512 byte blocks, or sectors.  These sectors are tracked by a directory and File Allocation Table (FAT). 
+The nth entry of the directory contains the number of the first sector of the nth file.
+The mth entry of the FAT contains the sector following sector m in the file.
+This implementation uses half of the Flash EEPROM as the disk.  This storage allows for 255 sectors of 512 bytes each.
+The 255th sector is reserved for the Directory and FAT.  As such, the value 255 is used in the directory and FAT to indicate there are no more sectors in the file.
+This simple file system has limited application, but could be used for any sort of logging.
+
