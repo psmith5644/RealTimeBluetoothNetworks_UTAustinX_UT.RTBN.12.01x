@@ -65,7 +65,7 @@ Button debouncing is handled by masking the interrupt temporarily for a short pe
 
 # Lab 5
 
-# Simple Write-once File System
+### Simple Write-once File System
 Implemented a simple write-once file system.  The system allows for files to be created, appended to and read, though not to be deleted or edited. 
 Files can be appended to and read in 512 byte blocks, or sectors.  These sectors are tracked by a directory and File Allocation Table (FAT). 
 The nth entry of the directory contains the number of the first sector of the nth file.
