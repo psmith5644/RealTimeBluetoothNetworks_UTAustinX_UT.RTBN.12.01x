@@ -36,6 +36,17 @@
 #include "eDisk.h"
 #include "FlashProgram.h"
 
+#define SECTOR_SIZE 512
+
+uint8_t isValidSector(uint8_t sector) {
+  if (EDISK_ADDR_MIN + SECTOR_SIZE * sector > EDISK_ADDR_MAX) {
+    return 0;
+  }
+  else {
+    return 1;
+  }
+}
+
 //*************** eDisk_Init ***********
 // Initialize the interface between microcontroller and disk
 // Inputs: drive number (only drive 0 is supported)
@@ -70,8 +81,21 @@ enum DRESULT eDisk_ReadSector(
 // starting ROM address of the sector is	EDISK_ADDR_MIN + 512*sector
 // return RES_PARERR if EDISK_ADDR_MIN + 512*sector > EDISK_ADDR_MAX
 // copy 512 bytes from ROM (disk) into RAM (buff)
-// **write this function**
- 
+
+  // guard against invalid sector number and memory address
+  if (!isValidSector(sector)) {
+    return RES_PARERR;
+  }
+
+  if (buff == ((void *)0)) {
+    return RES_PARERR;
+  }
+
+  uint32_t start_addr = EDISK_ADDR_MIN + SECTOR_SIZE * sector;
+
+  for (uint32_t i = 0; i < SECTOR_SIZE; i++) {
+    buff[i] = *(uint8_t*)(start_addr + i);
+  }
 			
   return RES_OK;
 }
@@ -93,9 +117,22 @@ enum DRESULT eDisk_WriteSector(
 // return RES_PARERR if EDISK_ADDR_MIN + 512*sector > EDISK_ADDR_MAX
 // write 512 bytes from RAM (buff) into ROM (disk)
 // you can use Flash_FastWrite or Flash_WriteArray
-// **write this function**
   
-			
+  if (!isValidSector(sector)) {
+    return RES_PARERR;
+  }
+
+  if (buff == ((void *)0)) {
+    return RES_PARERR;
+  }
+
+  uint32_t start_addr = EDISK_ADDR_MIN + SECTOR_SIZE * sector;	
+
+  uint32_t successful_writes = Flash_WriteArray((uint32_t*)buff, start_addr, SECTOR_SIZE / 4);
+  if (successful_writes != SECTOR_SIZE / 4) {
+    return RES_ERROR;
+  }
+
   return RES_OK;
 }
 
@@ -110,9 +147,12 @@ enum DRESULT eDisk_WriteSector(
 //  RES_PARERR    4: Invalid Parameter
 enum DRESULT eDisk_Format(void){
 // erase all flash from EDISK_ADDR_MIN to EDISK_ADDR_MAX
-// **write this function**
-  
-	
+  for (uint32_t addr = EDISK_ADDR_MIN; addr <= EDISK_ADDR_MAX; addr += 2 * SECTOR_SIZE) {
+    uint32_t error = Flash_Erase(addr); // erases flash 2 sectors (1024 bytes) at a time
+    if (error) {
+      return RES_ERROR;
+    }
+  }
 	
   return RES_OK;
 }
