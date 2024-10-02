@@ -70,6 +70,20 @@ void SetFCS(uint8_t *msg){
   uint8_t FCSOffset = lastPayloadByteOffset+1;
   msg[FCSOffset] = FCS;
 }
+
+void BuildMsg(uint8_t * msg, uint8_t length, uint8_t cmd0, uint8_t cmd1, uint8_t * payload) {
+  msg[0] = SOF;
+  msg[1] = length;
+  msg[2] = 0;
+  msg[3] = cmd0;
+  msg[4] = cmd1;
+
+  for (int i = 5; i < length+5; i++) {
+    msg[i] = payload[i-5];
+  }
+
+  SetFCS(msg);
+}
 //*************BuildGetStatusMsg**************
 // Create a Get Status message, used in Lab 6
 // Inputs pointer to empty buffer of at least 6 bytes
