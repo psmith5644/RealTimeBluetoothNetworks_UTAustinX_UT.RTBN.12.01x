@@ -59,9 +59,16 @@ extern NotifyCharacteristic_t NotifyCharacteristicList[];
 //         stores the FCS into message itself
 // Outputs: none
 void SetFCS(uint8_t *msg){
-//****You implement this function as part of Lab 6*****
+  uint8_t payloadLength = msg[1];
+  uint16_t lastPayloadByteOffset = 4 + payloadLength; // SOF, 2 length bytes, 2 command bytes, payload
 
-  
+  uint8_t FCS = msg[1];
+  for (uint16_t i = 2; i <= lastPayloadByteOffset; i++) {
+    FCS = FCS ^ msg[i];
+  }
+
+  uint8_t FCSOffset = lastPayloadByteOffset+1;
+  msg[FCSOffset] = FCS;
 }
 //*************BuildGetStatusMsg**************
 // Create a Get Status message, used in Lab 6
