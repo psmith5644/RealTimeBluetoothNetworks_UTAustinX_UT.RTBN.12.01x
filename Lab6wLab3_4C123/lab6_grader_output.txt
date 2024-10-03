@@ -1,0 +1,172 @@
+Grader output.  Some notes have been made explaining some of the messages 
+
+**Start Lab 6 Grader**TM4C123 Version 1.01** 
+
+BuildGetStatusMsg ok
+
+BuildGetVersionMsg ok
+
+BuildRegisterServiceMsg ok
+
+BuildAddServiceMsg ok
+
+BuildAddCharValueMsg ok
+
+BuildAddCharDescriptorMsg ok
+
+BuildAddNotifyCharDescriptorMsg ok
+
+BuildSetDeviceNameMsg ok
+
+BuildSetAdvertisementData1Msg ok
+
+BuildSetAdvertisementDataMsg ok
+
+BuildStartAdvertisementMsg ok
+
+Lab 6 Application Processor
+
+
+Reset CC2650 Success
+
+LP->SNP FE,03,00,55,04,1D,FC,01,B2	
+
+SNP->LP FE,03,00,55,04,00,1D,FC,B3 
+
+Get Status: Waiting to be started, advertising disabled, no ATT op ongoing
+
+LP->SNP FE,00,00,55,06,53
+
+SNP->LP FE,04,00,55,06,00,00,00,00,57
+
+Get Version Success, version 0x1001
+
+LP->SNP FE,00,00,35,03,36
+
+SNP->LP FE,0D,00,75,03,00,01,10,00,02,02,00,00,91,03,00,14,00,EC
+
+Add service: success
+
+LP->SNP FE,03,00,35,81,01,F0,FF,B9
+
+SNP->LP FE,01,00,75,81,00,F5
+
+Add CharValue: success, handle = 0x001E
+
+LP->SNP FE,08,00,35,82,03,0A,00,00,00,02,F1,FF,BA
+
+SNP->LP FE,03,00,75,82,00,1E,00,EA
+
+Add CharDescriptor: header and status appear in opposite than expected order, handle = 0x001F; "PlotState"
+
+LP->SNP FE,10,00,35,83,80,01,0A,00,0A,00,50,6C,6F,74,53,74,61,74,65,00,57
+
+SNP->LP FE,04,00,75,83,00,80,1F,00,6D
+
+Add CharValue: Success, handle = 0xfff2, maxlen = 0x0200
+
+LP->SNP FE,08,00,35,82,01,02,00,00,00,02,F2,FF,B3
+
+SNP->LP FE,03,00,75,82,00,21,00,D5
+
+Add CharDescriptor
+
+LP->SNP FE,0B,00,35,83,80,01,05,00,05,00,54,69,6D,65,00,09
+
+SNP->LP FE,04,00,75,83,00,80,22,00,50
+
+Add CharValue
+
+LP->SNP FE,08,00,35,82,01,02,00,00,00,02,F3,FF,B2
+
+SNP->LP FE,03,00,75,82,00,24,00,D0
+
+Add CharDescriptor "Sound"
+
+LP->SNP FE,0C,00,35,83,80,01,06,00,06,00,53,6F,75,6E,64,00,78
+
+SNP->LP FE,04,00,75,83,00,80,25,00,57
+
+Add CharValue
+
+LP->SNP FE,08,00,35,82,01,02,00,00,00,02,F4,FF,B5
+
+SNP->LP FE,03,00,75,82,00,27,00,D3
+
+Add CharDescriptor "temperature", success, handle = 0x0028
+
+LP->SNP FE,12,00,35,83,80,01,0C,00,0C,00,54,65,6D,70,65,72,61,74,75,72,65,00,69
+
+SNP->LP FE,04,00,75,83,00,80,28,00,5A
+
+Add CharValue
+
+LP->SNP FE,08,00,35,82,01,02,00,00,00,02,F5,FF,B4
+
+SNP->LP FE,03,00,75,82,00,2A,00,DE
+
+Add CharDescriptor
+
+LP->SNP FE,0C,00,35,83,80,01,06,00,06,00,4C,69,67,68,74,00,65
+
+SNP->LP FE,04,00,75,83,00,80,2B,00,59
+
+Add CharValue
+
+LP->SNP FE,08,00,35,82,02,08,00,00,00,02,F6,FF,BE
+
+SNP->LP FE,03,00,75,82,00,2D,00,D9
+
+Add CharDescriptor: attempt "edxNum", success, user desc. str, handle = 0x002E
+
+LP->SNP FE,0D,00,35,83,80,01,07,00,07,00,65,64,58,4E,75,6D,00,35
+
+SNP->LP FE,04,00,75,83,00,80,2E,00,5C
+
+Add Notify CharValue 
+
+LP->SNP FE,08,00,35,82,00,10,00,00,00,02,F7,FF,A5
+
+SNP->LP FE,03,00,75,82,00,30,00,C4
+
+Add CharDescriptor
+
+LP->SNP FE,17,00,35,83,84,03,01,10,00,10,00,4E,75,6D,62,65,72,20,6F,66,20,53,74,65,70,73,00,4C
+
+SNP->LP FE,06,00,75,83,00,84,31,00,32,00,77
+
+Register service: success, start handle = 0x001C, end handle = 0x0032
+
+LP->SNP FE,00,00,35,84,B1
+
+SNP->LP FE,05,00,75,84,00,1C,00,32,00,DA
+
+Set Device name
+
+LP->SNP FE,12,00,35,8C,01,00,00,53,68,61,70,65,20,74,68,65,20,57,6F,72,6C,64,DE
+
+SNP->LP FE,01,00,75,8C,00,F8
+
+SetAdvertisement1
+
+LP->SNP FE,0B,00,55,43,01,02,01,06,06,FF,0D,00,03,00,00,EE
+
+SNP->LP FE,01,00,55,43,00,17
+
+SetAdvertisement Data
+
+LP->SNP FE,1B,00,55,43,00,10,09,53,68,61,70,65,20,74,68,65,20,57,6F,72,6C,64,05,12,50,00,20,03,02,0A,00,0C
+
+SNP->LP FE,01,00,55,43,00,17
+
+StartAdvertisement
+
+LP->SNP FE,0E,00,55,42,00,00,00,64,00,00,00,00,01,00,00,00,C5,02,BB
+
+SNP->LP FE,03,00,55,05,08,00,00,5B
+
+Get Status
+
+LP->SNP FE,00,00,55,06,53
+
+SNP->LP FE,04,00,55,06,02,01,00,00,54
