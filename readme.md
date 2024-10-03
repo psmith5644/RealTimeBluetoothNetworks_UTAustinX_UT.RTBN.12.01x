@@ -74,3 +74,14 @@ This implementation uses half of the Flash EEPROM as the disk.  This storage all
 The 255th sector is reserved for the Directory and FAT.  As such, the value 255 is used in the directory and FAT to indicate there are no more sectors in the file.
 This simple file system has limited application, but could be used for any sort of logging.
 
+# Lab 6
+
+### BLE and Simple Network Processor API Implementation
+
+In Lab 6, I implemented several methods that construct messages to be sent to the CC2650 Network Processor using the Simple Network Process API.  This interface allows the Application Processor, in this case a TivaC Launchpad, to configure Bluetooth Low Energy services that are implemented by the CC2650.   The implemented messages allow for BLE services and attributes to be configured, and allow for the NP to begin advertising its data.  
+
+Some issues were encountered: When connecting to the NP via my smartphone, only some of the attributes appear, despite the messages saying that all of the attributes were successfully registered.  However, all of the messages I implemented are constructed correctly according to the provided grader.  I manually decoded several messages and message responses and determined that all of the messages appear to be sent correctly and receive responses that indicate success, so the issue does not appear to be with my implementation of the SNP message builders, which is the vast majority the implementation of this lab.  If I remove the first few characteristics from being added to the service, the previously unseen characteristics appear.  I'm not sure what sort of issue would cause this behavior, given that the messages are being constructed and sent correctly.
+
+Because the application seems to function correctly at the SNP API level, I examined the provided functions such as Lab6_AddCharacteristic() to see if the issue lied there.  But this function seems to be running correctly in each instantiation, always returning a success code, and each time it sends a message it receives success codes.  I thought then that the issue may lie in the RTOS, which is my implementation from lab3 that was pasted into this project, but the rest of the system runs fine; additionally, the alternative Lab6 does not use an RTOS and also encounters the same issue, so the issue does not appear to be caused from my RTOS.  This leaves the LightBlue app, that I use to connect to the NP, as a potential culprit.  Although it is of course possible that there is some issue with my SNP messages, the provided Lab6 application, or my RTOS that I have been unable to discover. 
+
+I have decided to move on from the project because as far as I can tell, I implemented all of the SNP messages correctly, which is the focus of the project, and some correct functionality has been delivered.  Rather than continue to debug this, I will continue learning other topics in embedded systems.
