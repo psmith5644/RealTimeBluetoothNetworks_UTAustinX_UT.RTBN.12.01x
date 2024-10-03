@@ -76,13 +76,22 @@
 
 #else
   //Keil uVision Code
-  __asm void
-  delay(unsigned long ulCount)
-  {
-    subs    r0, #1
-    bne     delay
-    bx      lr
-  }
+  //__asm void
+  //delay(unsigned long ulCount)
+  //{
+   // subs    r0, #1
+    //bne     delay
+    //bx      lr
+  //}
+  
+  // ARM Clang Compiler 6 version
+void delay(unsigned long ulCount) {
+    __asm volatile (
+        "1: subs %[count], %[count], #1 \n"  // Decrement the counter
+        "bne 1b                \n"           // If not zero, branch to label 1
+        : [count] "+r" (ulCount)             // Output operand for ulCount
+    );
+}
 
 #endif
   
